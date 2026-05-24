@@ -13,7 +13,7 @@ from sqlalchemy.orm import (
 
 from datetime import datetime
 
-from db.database import Base
+from backend.db.database import Base
 
 
 class Claim(Base):

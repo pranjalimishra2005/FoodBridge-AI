@@ -1,11 +1,16 @@
+from typing import Optional
 from pydantic import BaseModel, EmailStr
+from enum import Enum
 
+class UserRole(str, Enum):
+    DONOR = "DONOR"
+    NGO = "NGO"
+    ADMIN = "ADMIN"
 
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
-
-
+    role: UserRole = UserRole.DONOR  # Default, but client can override
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
@@ -14,7 +19,7 @@ class UserLogin(BaseModel):
 class UserResponse(BaseModel):
     id: int
     email: EmailStr
-    role: str
+    role: Optional[str] = "DONOR"
 
     class Config:
         from_attributes = True
