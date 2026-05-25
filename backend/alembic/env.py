@@ -24,8 +24,8 @@ if config.config_file_name is not None:
 # ---------------------------------------------------------
 # 2. MODEL METADATA LINKING
 # ---------------------------------------------------------
-from db.database import Base
-import models  # This triggers __init__.py so Alembic sees your tables
+from backend.db.database import Base
+from backend.models import user, donation, ngo, claim, food_item # This triggers __init__.py so Alembic sees your tables
 
 target_metadata = Base.metadata
 

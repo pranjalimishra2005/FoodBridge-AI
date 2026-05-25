@@ -8,7 +8,7 @@ from sqlalchemy.orm import (
     mapped_column,
 )
 
-from db.database import Base
+from backend.db.database import Base
 
 
 class NGO(Base):
