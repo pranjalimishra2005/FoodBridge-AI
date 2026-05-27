@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy import (
     String,
     DateTime,
+    Enum,
 )
 
 from sqlalchemy.sql import func
@@ -15,7 +16,12 @@ from sqlalchemy.orm import (
 
 from backend.db.database import Base
 
+import enum
 
+class UserRole(str, enum.Enum):
+    DONOR = "DONOR"
+    NGO = "NGO"
+    ADMIN = "ADMIN"
 class User(Base):
     __tablename__ = "users"
 
@@ -36,9 +42,13 @@ class User(Base):
         nullable=False,
     )
 
-    role: Mapped[str] = mapped_column(
-        String(50),
-        default="DONOR",
+    role: Mapped[UserRole] = mapped_column(
+    Enum(
+        UserRole,
+        native_enum=False
+    ),
+    default=UserRole.DONOR,
+    nullable=False,
     )
 
     created_at: Mapped[datetime] = mapped_column(
@@ -50,4 +60,11 @@ class User(Base):
         "Donation",
         back_populates="donor",
         cascade="all, delete-orphan",
+    )
+
+    ngo: Mapped["NGO"] = relationship(
+    "NGO",
+    back_populates="user",
+    uselist=False,
+    cascade="all, delete-orphan",
     )
