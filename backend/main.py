@@ -62,3 +62,7 @@ app.include_router(
     auth_router,
     tags=["Authentication"],
 )
+
+from backend.routers import donations
+
+app.include_router(donations.router)

@@ -19,7 +19,7 @@ class UserLogin(BaseModel):
 class UserResponse(BaseModel):
     id: int
     email: EmailStr
-    role: Optional[str] = "DONOR"
+    role: Optional[UserRole] = UserRole.DONOR
 
     class Config:
         from_attributes = True

@@ -1,33 +1,24 @@
-from fastapi import (
-    Depends,
-    HTTPException,
-    status
-)
-
+from fastapi import Depends, HTTPException, status
 from fastapi.security import (
     HTTPBearer,
-    HTTPAuthorizationCredentials
+    HTTPAuthorizationCredentials,
 )
-
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.db.database import get_db
-
 from backend.repositories.user_repository import (
-    get_user_by_email
+    get_user_by_email,
 )
-
 from backend.services.auth_service import (
-    decode_token
+    decode_token,
 )
-
 
 security = HTTPBearer()
 
 
-def get_current_user(
+async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
 
     token = credentials.credentials
@@ -37,20 +28,20 @@ def get_current_user(
     if not payload:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token"
+            detail="Invalid token",
         )
 
     email = payload.get("sub")
 
-    user = get_user_by_email(
+    user = await get_user_by_email(
         db,
-        email
+        email,
     )
 
     if not user:
         raise HTTPException(
-            status_code=401,
-            detail="User not found"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found",
         )
 
     return user
