@@ -1,12 +1,10 @@
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import List
 
 from sqlalchemy import (
     String,
-    Integer,
     DateTime,
     ForeignKey,
-    Boolean,
 )
 
 from sqlalchemy.orm import (
@@ -19,9 +17,6 @@ from sqlalchemy.sql import func
 
 from backend.db.database import Base
 
-if TYPE_CHECKING:
-    from backend.models.user import User
-
 
 class Donation(Base):
     __tablename__ = "donations"
@@ -32,8 +27,7 @@ class Donation(Base):
     )
 
     donor_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id"),
-        nullable=False,
+        ForeignKey("users.id")
     )
 
     food_type: Mapped[str] = mapped_column(
@@ -41,29 +35,14 @@ class Donation(Base):
         nullable=False,
     )
 
-    quantity: Mapped[int] = mapped_column(
-        Integer,
-        nullable=False,
-    )
-
-    expiry: Mapped[datetime] = mapped_column(
-        DateTime,
+    quantity: Mapped[str] = mapped_column(
+        String,
         nullable=False,
     )
 
     status: Mapped[str] = mapped_column(
         String,
         default="AVAILABLE",
-    )
-
-    location: Mapped[str] = mapped_column(
-        String,
-        nullable=False,
-    )
-
-    is_deleted: Mapped[bool] = mapped_column(
-        Boolean,
-        default=False,
     )
 
     created_at: Mapped[datetime] = mapped_column(
@@ -74,4 +53,10 @@ class Donation(Base):
     donor: Mapped["User"] = relationship(
         "User",
         back_populates="donations",
+    )
+
+    claims: Mapped[List["Claim"]] = relationship(
+        "Claim",
+        back_populates="donation",
+        cascade="all, delete-orphan",
     )
