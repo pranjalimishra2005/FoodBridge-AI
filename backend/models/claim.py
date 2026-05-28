@@ -1,9 +1,11 @@
+from datetime import datetime
+import enum
+
 from sqlalchemy import (
     ForeignKey,
-    String,
     DateTime,
+    Enum,
 )
-from sqlalchemy.sql import func
 
 from sqlalchemy.orm import (
     Mapped,
@@ -11,37 +13,52 @@ from sqlalchemy.orm import (
     relationship,
 )
 
-from datetime import datetime
-
 from backend.db.database import Base
+
+
+class ClaimStatus(str, enum.Enum):
+    PENDING = "PENDING"
+    CONFIRMED = "CONFIRMED"
+    CANCELLED = "CANCELLED"
 
 
 class Claim(Base):
     __tablename__ = "claims"
 
     id: Mapped[int] = mapped_column(
-        primary_key=True
+        primary_key=True,
+        index=True,
     )
 
     donation_id: Mapped[int] = mapped_column(
-        ForeignKey("donations.id"),
-        nullable=False
+        ForeignKey("donations.id")
     )
 
     ngo_id: Mapped[int] = mapped_column(
-        ForeignKey("ngos.id"),
-        nullable=False
+        ForeignKey("ngos.id")
     )
 
-    status: Mapped[str] = mapped_column(
-        String,
-        default="PENDING"
+    status: Mapped[ClaimStatus] = mapped_column(
+        Enum(ClaimStatus, native_enum=False),
+        default=ClaimStatus.PENDING,
     )
 
     claimed_at: Mapped[datetime] = mapped_column(
         DateTime,
-        server_default=func.now()
+        default=datetime.utcnow,
     )
 
-    donation = relationship("Donation")
-    ngo = relationship("NGO")
+    confirmed_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        nullable=True,
+    )
+
+    donation: Mapped["Donation"] = relationship(
+        "Donation",
+        back_populates="claims",
+    )
+
+    ngo: Mapped["NGO"] = relationship(
+        "NGO",
+        back_populates="claims",
+    )
