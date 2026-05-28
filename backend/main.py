@@ -71,3 +71,7 @@ app.include_router(donations.router)
 from backend.routers import ngos
 
 app.include_router(ngos.router)
+
+from backend.routers import claims
+
+app.include_router(claims.router)
